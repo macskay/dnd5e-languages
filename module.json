@@ -7,25 +7,19 @@
     "minimumCoreVersion": "0.9",
     "compatibleCoreVersion": "0.9",
     "dependencies": [
-		{
-			"name": "dnd5e",
-			"type": "system"
-		},
-		{
-            "name": "custom-fonts",
-            "type": "module"
-        }
+      {
+        "name": "dnd5e",
+        "type": "system"
+      },
+      {
+        "name": "custom-fonts",
+        "type": "module"
+      }
     ],
     "scripts": [
         "scripts/chat.js"
     ],
-	    "flags": {
-        "custom-fonts": {
-            "fonts": [
-                "Orc",
-				"Infernal
-            ],
-			"directory": "fonts"
-        }
-    },
+    "flags": {
+      "directory": "fonts"
+    }
 }
