@@ -1,3 +1,14 @@
+# D&D 5e Language
+
+This Foundry VTT plugin allows for chatting in specific languages. If the player understands the language the font is translated, otherwise not.
+
+# How to Install
+
+Install the Module using the following url to the manifest.json
+ - https://raw.githubusercontent.com/macskay/dnd5e-languages/main/module.json
+
+# Used Fonts
+
 | Language | Font |  Download | Description |
 |--------|-----|----|----|
 |Aarakocra|Pulsian|https://www.dafont.com/pulsian.font|No official informaion about script, random choice.
