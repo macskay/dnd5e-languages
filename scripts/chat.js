@@ -80,7 +80,7 @@ Hooks.on('ready', () => {
     _setupLanguages();
 });
 
-Hooks.on('updateActor', (document, change, options, userId) => {
+Hooks.on('updateActor', (_, change) => {
     let actorId = change._id;
     const myCharId = game.users.current.data.character;
     if (myCharId === actorId) {
@@ -89,6 +89,7 @@ Hooks.on('updateActor', (document, change, options, userId) => {
 });
 
 Hooks.on('chatMessage', (chatLog, message, chatData) => {
+    console.log(message);
     const cls = ChatMessage.implementation;
     chatData.content = message;
 
@@ -98,16 +99,17 @@ Hooks.on('chatMessage', (chatLog, message, chatData) => {
     if ( command === 'invalid' ) throw new Error(game.i18n.format('CHAT.InvalidCommand', {command: match[1]}));
     else if ( command === 'none' ) command = chatData.speaker.token ? 'ic' : 'ooc';
 
+    console.log(command);
     const createOptions = {};
     switch (command) {
       case 'roll': case 'gmroll': case 'blindroll': case 'selfroll': case 'publicroll':
-        chatLog._processDiceCommand(command, match, chatData, createOptions);
+        await chatLog._processDiceCommand(command, match, chatData, createOptions);
         break;
       case 'whisper': case 'reply': case 'gm': case 'players':
         chatLog._processWhisperCommand(command, match, chatData, createOptions);
         break;
       case 'ic': case 'emote': case 'ooc':
-         chatLog._processChatCommand(command, match, chatData, createOptions);
+        chatLog._processChatCommand(command, match, chatData, createOptions);
         break;
       case 'macro':
         chatLog._processMacroCommand(command, match);
@@ -116,28 +118,25 @@ Hooks.on('chatMessage', (chatLog, message, chatData) => {
 
     const language = $('#dnd5e-lang').val();
     const langCapital = language.charAt(0).toUpperCase() + language.slice(1);
-    chatData.content = langCapital + ': ' + message;
-    cls.create(chatData, createOptions).then((chatMessage) => {
-        if (language) {
-            chatMessage.setFlag('world', 'lang', language);
-        }
-    });
+    chatData.content = langCapital + ': ' + chatData.content;
+    cls.create(chatData, createOptions);
 
     return false;
 });
 
 Hooks.on('renderChatMessage', (message, html) => {
     const msg = message.data.content;
-    const language = message.getFlag('world', 'lang');
+    const language = message.data.content.split(':')[0];    
+    let messageContent = html.find('.message-content');
     if (!language || language.toLowerCase() === 'common') {
-        html[0].innerHTML = msg.split(':')[1];
+        messageContent[0].innerHTML = msg.split(':')[1];
         return;
     }
 
     if (language !== 'halfling') {
-        html[0].innerHTML = '<p style=\'font-family: ' + language + '; font-size: 20px;\'>' + _scramble(msg.split(':')[1]); + '</p>';
+        messageContent[0].innerHTML = '<p style=\'font-family: ' + language + '; font-size: 20px;\'>' + _scramble(msg.split(':')[1]) + '</p>';
     } else {
-        html[0].innerHTML = _scramble(msg.split(':')[1]) + '<br>';
+        messageContent[0].innerHTML = _scramble(msg.split(':')[1]) + '<br>';
     }
     if (!game.users.current.isGM) {
         const myCharId = game.users.current.data.character;
@@ -145,10 +144,10 @@ Hooks.on('renderChatMessage', (message, html) => {
         const myLanguages = myChar.data.data.traits.languages.value;
 
         if(myLanguages.includes(language.toLowerCase())) {
-            html[0].innerHTML += msg;
+            messageContent[0].innerHTML += msg;
         }
     } else {
-        html[0].innerHTML += msg;
+        messageContent[0].innerHTML += msg;
     }
 });
 

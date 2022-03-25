@@ -6,7 +6,7 @@
     "url" : "https://github.com/macskay/dnd5e-languages",
     "manifest": "https://raw.githubusercontent.com/macskay/dnd5e-languages/main/module.json",
     "download": "https://github.com/macskay/dnd5e-languages/archive/main.zip",
-    "version": "0.3.0",
+    "version": "1.0.0",
     "minimumCoreVersion": "0.8.9",
     "compatibleCoreVersion": "9",
     "dependencies": [
