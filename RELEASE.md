@@ -1,3 +1,9 @@
+# 1.0.0
+
++ Languages Selection now updating as soon as Player Char updates their languages in the Actor Sheet
++ If Common is known it is selected as the default language
++ 1.0.0 Release => All basic functionality given 
+
 # 0.2.0
 
 + Added fonts for each language and README.md

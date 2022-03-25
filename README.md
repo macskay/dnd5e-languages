@@ -34,4 +34,3 @@ Install the Module using the following url to the manifest.json
 |Terran|Barhazrad|https://www.dafont.com/barazhad.font|A Primordial Dialect
 |Undercommon|Olde Espruar|https://www.dafont.com/olde-espruar.font|Espruar Script https://dndtopics.com/languages/undercommon/
 |Gnoll|Barhazrad|https://www.dafont.com/barazhad.font|Similar to Abyssal https://dndtopics.com/languages/gnoll-2/
-|Cant| | |No script as not written in words

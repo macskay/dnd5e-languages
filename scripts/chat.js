@@ -4,8 +4,8 @@ DND_LANGS = [
     'aquan',
     'auran',
     'celestial',
-    'common',
     'deep',
+    'common',
     'draconic',
     'druidic',
     'dwarvish',
@@ -22,12 +22,73 @@ DND_LANGS = [
     'primordial',
     'sylvan',
     'terran',
-    'cant',
     'undercommon'
 ];
 
-Hooks.on('chatMessage', function(chatLog, message, chatData) {
+function _setupLanguages() {
+    const closest = $('#chat-form');
+    if (closest.length === 1) {
+        let options = '';
+        let myLangs = {};
+        if (!game.users.current.isGM) {
+            const myCharId = game.users.current.data.character;
+            const myChar = game.actors.get(myCharId);
+            myLangs = myChar.data.data.traits.languages.value;
+        } else {
+            myLangs = DND_LANGS;
+        }
+        
+        myLangs.forEach((lang) => {
+            if (lang === 'cant') {
+                return;  // skip Thieve's Can't
+            }
+            const longCapital = lang.charAt(0).toUpperCase() + lang.slice(1);
+            options += '<option value="' + lang + '"' + (lang === 'common' ? ' selected=""' : '') + '>' + longCapital + '</option>';
+        });
 
+        let langSelect = $(
+            '<div id="dnd5e-languages" class="flexrow" style="flex: 0 0 28px; margin: 0 6px; align-content: center;">' + 
+                '<select id="dnd5e-lang" class="roll-type-select" name="language" style="background: rgba(255, 255, 245, 0.8);">' + 
+                    '<optgroup label="Language">' + 
+                        options + 
+                    '</optgroup>'+
+                '</select>' + 
+            '</div>');
+        langSelect.insertAfter(closest);
+    }
+}
+
+function _scramble(message) {
+    var stringValues = 'abcdefghijklmnopqrstuvwxyz';  
+    var sizeOfCharacter = stringValues.length;  
+    let scramble = '';
+    let bCap = true;
+    message.split('').forEach((char) => {
+        if (char === ' ') {
+            scramble += char;
+            bCap = true;
+            return;
+        }
+        let scrambledChar = stringValues.charAt(Math.floor(Math.random() * sizeOfCharacter));
+        scramble += bCap ? scrambledChar.toUpperCase() : scrambledChar;
+        bCap = false;
+    });
+    return scramble;
+}
+
+Hooks.on('ready', () => {
+    _setupLanguages();
+});
+
+Hooks.on('updateActor', (document, change, options, userId) => {
+    let actorId = change._id;
+    const myCharId = game.users.current.data.character;
+    if (myCharId === actorId) {
+       _setupLanguages();
+    }
+});
+
+Hooks.on('chatMessage', (chatLog, message, chatData) => {
     const cls = ChatMessage.implementation;
     chatData.content = message;
 
@@ -65,47 +126,19 @@ Hooks.on('chatMessage', function(chatLog, message, chatData) {
     return false;
 });
 
-Hooks.on('ready', function() {
-    const closest = $('#chat-form');
-    if (closest.length === 1) {
-
-        let options = '';
-  
-        let myLangs = {};
-        if (!game.users.current.isGM) {
-            const myCharId = game.users.current.data.character;
-            const myChar = game.actors.get(myCharId);
-            myLangs = myChar.data.data.traits.languages.value;
-        } else {
-            myLangs = DND_LANGS;
-        }
-        
-        myLangs.forEach((lang) => {
-            const longCapital = lang.charAt(0).toUpperCase() + lang.slice(1);
-            options += '<option value="' + lang + '">' + longCapital + '</option>';
-        });
-
-        let langSelect = $(
-            '<div class="flexrow" style="flex: 0 0 28px; margin: 0 6px; align-content: center;">' + 
-                '<select id="dnd5e-lang" class="roll-type-select" name="language" style="background: rgba(255, 255, 245, 0.8);">' + 
-                    '<optgroup label="Language">' + 
-                        options + 
-                    '</optgroup>'+
-                '</select>' + 
-            '</div>');
-        langSelect.insertAfter(closest);
-    }
-});
-
-Hooks.on('renderChatMessage', function(message, html) {
+Hooks.on('renderChatMessage', (message, html) => {
     const msg = message.data.content;
     const language = message.getFlag('world', 'lang');
     if (!language || language.toLowerCase() === 'common') {
-        html[0].innerHTML = msg;
+        html[0].innerHTML = msg.split(':')[1];
         return;
     }
 
-    html[0].innerHTML = '<p style=\'font-family: ' + language + '; font-size: 20px;\'>' + scramble(msg); + '</p>';
+    if (language !== 'halfling') {
+        html[0].innerHTML = '<p style=\'font-family: ' + language + '; font-size: 20px;\'>' + _scramble(msg.split(':')[1]); + '</p>';
+    } else {
+        html[0].innerHTML = _scramble(msg.split(':')[1]) + '<br>';
+    }
     if (!game.users.current.isGM) {
         const myCharId = game.users.current.data.character;
         const myChar = game.actors.get(myCharId);
@@ -119,7 +152,7 @@ Hooks.on('renderChatMessage', function(message, html) {
     }
 });
 
-Hooks.on('chatBubble', function(_token, html, message) {
+Hooks.on('chatBubble', (_token, html, message) => {
     const content = message;
         
     if (content.includes(':')) {
@@ -127,18 +160,9 @@ Hooks.on('chatBubble', function(_token, html, message) {
         const language = spl[0].toLowerCase();
         const msg = spl[1];
         if (language === 'common') {
+            html[0].innerHTML = html[0].innerHTML.replace(content, msg);
             return;
         }
-        html[0].innerHTML = html[0].innerHTML.replace(content, '<span style=\'font-family: ' + spl[0] + ';\'>' + scramble(msg) + '</span>');
+        html[0].innerHTML = html[0].innerHTML.replace(content, '<span style=\'font-family: ' + spl[0] + ';\'>' + _scramble(msg) + '</span>');
     }
 });
-
-function scramble(word) {
-    var stringValues = 'ABCDEFGHIJKLMNOabcdefghijklmnopqrstuvwxyzPQRSTUVWXYZ               ';  
-    var sizeOfCharacter = stringValues.length;  
-    let scramble = '';
-    word.split('').forEach(() => {
-        scramble += stringValues.charAt(Math.floor(Math.random() * sizeOfCharacter));
-    });
-    return scramble;
-}
