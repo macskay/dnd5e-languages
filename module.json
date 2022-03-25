@@ -1,0 +1,31 @@
+{
+    "name": "dnd5e-languages",
+    "title": "Chat in D&D5e Languages",
+    "description": "Module for sending Chat Messages in a chosen D&D language",
+    "author": "macskay",
+    "version": "0.1.0",
+    "minimumCoreVersion": "0.9",
+    "compatibleCoreVersion": "0.9",
+    "dependencies": [
+		{
+			"name": "dnd5e",
+			"type": "system"
+		},
+		{
+            "name": "custom-fonts",
+            "type": "module"
+        }
+    ],
+    "scripts": [
+        "scripts/chat.js"
+    ],
+	    "flags": {
+        "custom-fonts": {
+            "fonts": [
+                "Orc",
+				"Infernal
+            ],
+			"directory": "fonts"
+        }
+    },
+}
