@@ -2,7 +2,8 @@
 
 + Fixed Timestamping issue, where the chat message no longer contained timestamping information and thus the updateing throwed errors
 + Player and Timestamp now shown in Chat Message
-+ Fixed Chat Commands (roll, whisper, emote, ic, ooc, reply now working again)
++ Fixed most Chat Commands (whisper, emote, ic, ooc, reply now working again)
+- /roll not working
 
 # 0.3.0
 

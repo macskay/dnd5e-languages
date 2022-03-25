@@ -89,7 +89,6 @@ Hooks.on('updateActor', (_, change) => {
 });
 
 Hooks.on('chatMessage', (chatLog, message, chatData) => {
-    console.log(message);
     const cls = ChatMessage.implementation;
     chatData.content = message;
 
@@ -99,11 +98,10 @@ Hooks.on('chatMessage', (chatLog, message, chatData) => {
     if ( command === 'invalid' ) throw new Error(game.i18n.format('CHAT.InvalidCommand', {command: match[1]}));
     else if ( command === 'none' ) command = chatData.speaker.token ? 'ic' : 'ooc';
 
-    console.log(command);
     const createOptions = {};
     switch (command) {
       case 'roll': case 'gmroll': case 'blindroll': case 'selfroll': case 'publicroll':
-        await chatLog._processDiceCommand(command, match, chatData, createOptions);
+        chatLog._processDiceCommand(command, match, chatData, createOptions);
         break;
       case 'whisper': case 'reply': case 'gm': case 'players':
         chatLog._processWhisperCommand(command, match, chatData, createOptions);
